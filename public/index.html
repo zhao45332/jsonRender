@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>jsonRender</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="panel input-panel" aria-label="名片字段">
+        <div class="brand">
+          <span class="brand-mark">{ }</span>
+          <div>
+            <h1>jsonRender</h1>
+            <p>填写字段，生成 JSON 卡片 PNG</p>
+          </div>
+        </div>
+
+        <form id="cardForm" class="form-table" novalidate>
+          <label>
+            <span>标题</span>
+            <input id="title" name="title" maxlength="5000" placeholder="Business Card" required />
+          </label>
+          <label>
+            <span>名字</span>
+            <input id="name" name="name" maxlength="5000" autocomplete="name" placeholder="@fr0gger_" required />
+          </label>
+          <label>
+            <span>手机号</span>
+            <input id="phone" name="phone" maxlength="5000" autocomplete="tel" placeholder="13800000000" required />
+          </label>
+          <label>
+            <span>邮箱</span>
+            <input id="email" name="email" maxlength="5000" type="email" autocomplete="email" placeholder="my@email.com" required />
+          </label>
+          <label>
+            <span>备注</span>
+            <textarea id="remark" name="remark" maxlength="5000" rows="3" placeholder="Malware Therapist"></textarea>
+          </label>
+          <input id="toolbarItems" name="toolbarItems" type="hidden" />
+
+          <div class="actions">
+            <button id="downloadBtn" class="primary" type="button">下载 PNG</button>
+          </div>
+          <p id="message" class="message" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="preview-stage" aria-label="图片预览">
+        <div class="canvas-wrap">
+          <canvas id="cardCanvas" width="920" height="560"></canvas>
+          <div id="emojiPopover" class="emoji-popover" hidden>
+            <div class="emoji-popover-head">
+              <strong>添加符号 / emoji</strong>
+              <button id="closeEmojiPopoverBtn" type="button">×</button>
+            </div>
+            <div id="popoverSelected" class="symbol-selected" aria-label="已选择的工具栏符号"></div>
+            <div id="symbolQuickList" class="symbol-quick-list" aria-label="常用符号"></div>
+            <div class="custom-symbol">
+              <input id="customSymbolInput" maxlength="12" placeholder="自定义符号或 emoji" />
+              <button id="addCustomSymbolBtn" type="button">+</button>
+            </div>
+            <emoji-picker id="emojiPicker" class="dark"></emoji-picker>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="idea-section" aria-label="用户创意建议">
+      <form id="ideaForm" class="panel idea-panel" action="api/ideas" method="post" novalidate>
+        <div>
+          <h2>用户创意</h2>
+          <p>这里提交的内容只作为建议保存，不会出现在 JSON 卡片或 PNG 中。</p>
+        </div>
+        <textarea id="ideaText" name="ideaText" maxlength="5000" rows="4" placeholder="写下你希望增加的功能、样式或使用建议"></textarea>
+        <button class="secondary" type="submit">提交建议</button>
+        <p id="ideaMessage" class="message" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

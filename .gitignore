@@ -1,0 +1,7 @@
+data/db.json
+node_modules/
+.cursorindexingignore
+.specstory/
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,13 @@
+{
+  "name": "json-render",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Render submitted business card fields as a JSON editor style PNG.",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
