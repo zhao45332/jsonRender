@@ -26,7 +26,7 @@ $env:PORT=3001; node server.js
 
 项目包含 `.github/workflows/pages.yml`。推送到 GitHub 的 `main` 分支后，会自动把 `public/` 发布到 GitHub Pages。
 
-GitHub Pages 是静态托管环境，不会运行 `server.js`。线上 Pages 版本可以预览和下载 PNG，但不能保存到 `data/db.json`，用户创意建议也不会被服务器保存。需要保存建议和记录时，请运行 Node 后端或部署到支持 Node 的平台。
+GitHub Pages 是静态托管环境，不会运行 `server.js`。线上 Pages 版本可以预览和下载 PNG，但不能保存到 `data/db.json`。用户创意建议会打开 GitHub Issue 预填页面。需要本地保存建议和记录时，请运行 Node 后端或部署到支持 Node 的平台。
 
 ## 文件
 

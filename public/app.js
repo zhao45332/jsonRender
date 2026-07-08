@@ -16,6 +16,8 @@ const addCustomSymbolBtn = document.querySelector("#addCustomSymbolBtn");
 
 const API_CARDS_URL = "api/cards";
 const API_IDEAS_URL = "api/ideas";
+const ISSUE_NEW_URL = "https://github.com/zhao45332/jsonRender/issues/new";
+const IS_GITHUB_PAGES = location.hostname.endsWith("github.io");
 const DEFAULT_TOOLBAR_ITEMS = ["file", "copy", "folder", "download", "refresh", "braces"];
 const TOOLBAR_ICON_LABELS = {
   file: "▯",
@@ -562,24 +564,41 @@ async function saveCurrentCard() {
   return result.card;
 }
 
-async function downloadPng() {
-  try {
-    await saveCurrentCard();
-  } catch (error) {
-    setMessage(error.message, true);
-    return;
-  }
-
+function downloadPng() {
+  const payload = Object.fromEntries(new FormData(form).entries());
+  renderCard(payload);
   const link = document.createElement("a");
   link.download = `${(currentCard.title || "business-card").replace(/[^\w-]+/g, "-")}-${Date.now()}.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
-  setMessage("PNG 已下载。");
+
+  if (IS_GITHUB_PAGES) {
+    setMessage("PNG 已下载。静态站点不会保存到 db。");
+    return;
+  }
+
+  saveCurrentCard()
+    .then(() => setMessage("PNG 已下载，并已保存到 data/db.json。"))
+    .catch((error) => setMessage(`PNG 已下载，但保存失败：${error.message}`, true));
 }
 
 async function submitIdea(event) {
   event.preventDefault();
   const ideaText = new FormData(ideaForm).get("ideaText");
+  if (!String(ideaText || "").trim()) {
+    setIdeaMessage("请输入建议内容", true);
+    return;
+  }
+
+  if (IS_GITHUB_PAGES) {
+    const issueUrl = new URL(ISSUE_NEW_URL);
+    issueUrl.searchParams.set("title", "用户创意建议");
+    issueUrl.searchParams.set("body", String(ideaText).trim());
+    window.open(issueUrl.toString(), "_blank", "noopener,noreferrer");
+    setIdeaMessage("已打开 GitHub Issue 页面，请在那里提交建议。");
+    return;
+  }
+
   setIdeaMessage("正在提交...");
 
   let response;
