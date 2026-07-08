@@ -578,7 +578,6 @@ function trackDownload() {
   if (typeof gtag === "function") {
     gtag("event", "download_png", { event_category: "engagement" });
   }
-  window._hmt?.push(["_trackEvent", "engagement", "click", "download_png"]);
 }
 
 function downloadPng() {
