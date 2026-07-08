@@ -574,6 +574,13 @@ async function saveCurrentCard() {
   return result.card;
 }
 
+function trackDownload() {
+  if (typeof gtag === "function") {
+    gtag("event", "download_png", { event_category: "engagement" });
+  }
+  window._hmt?.push(["_trackEvent", "engagement", "click", "download_png"]);
+}
+
 function downloadPng() {
   const payload = Object.fromEntries(new FormData(form).entries());
   renderCard(payload);
@@ -581,6 +588,7 @@ function downloadPng() {
   link.download = `${(currentCard.title || "business-card").replace(/[^\w-]+/g, "-")}-${Date.now()}.png`;
   link.href = canvas.toDataURL("image/png");
   link.click();
+  trackDownload();
 
   if (IS_GITHUB_PAGES) {
     setMessage("PNG 已下载。静态站点不会保存到 db。");
