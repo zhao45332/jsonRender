@@ -18,6 +18,13 @@ const API_CARDS_URL = "api/cards";
 const API_IDEAS_URL = "api/ideas";
 const ISSUE_NEW_URL = "https://github.com/zhao45332/jsonRender/issues/new";
 const IS_GITHUB_PAGES = location.hostname.endsWith("github.io");
+const CODE_FONT_FAMILY = "Hack, Consolas, 'Courier New', monospace";
+const codeFontReady = document.fonts
+  ? Promise.all([
+      document.fonts.load(`31px ${CODE_FONT_FAMILY}`),
+      document.fonts.ready
+    ])
+  : Promise.resolve();
 const DEFAULT_TOOLBAR_ITEMS = ["file", "copy", "folder", "download", "refresh", "braces"];
 const TOOLBAR_ICON_LABELS = {
   file: "▯",
@@ -43,6 +50,7 @@ let currentCard = {
 for (const [key, value] of Object.entries(currentCard)) {
   if (form.elements[key]) form.elements[key].value = value;
 }
+downloadBtn.disabled = true;
 
 function parseToolbarItems(value) {
   try {
@@ -203,7 +211,7 @@ function drawIcon(kind, x, y) {
     ctx.stroke();
   }
   if (kind === "braces") {
-    ctx.font = "30px Consolas, monospace";
+    ctx.font = `30px ${CODE_FONT_FAMILY}`;
     ctx.fillStyle = "#f3f7f6";
     ctx.fillText("{}", x, y + 25);
   }
@@ -222,7 +230,7 @@ function drawToolbarItem(item, x, y) {
 
   ctx.save();
   ctx.fillStyle = "#f3f7f6";
-  ctx.font = "28px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', Consolas, sans-serif";
+  ctx.font = `28px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', ${CODE_FONT_FAMILY}`;
   ctx.textBaseline = "top";
   ctx.fillText(item, x, y - 1);
   const width = Math.max(34, ctx.measureText(item).width + 16);
@@ -239,7 +247,7 @@ function drawToolbarItems(items, x, y, maxX) {
       toolbarPlusBounds = { x: cursorX - 5, y: y - 5, width: 34, height: 38 };
       ctx.save();
       ctx.fillStyle = "#f3f7f6";
-      ctx.font = "30px Consolas, monospace";
+      ctx.font = `30px ${CODE_FONT_FAMILY}`;
       ctx.textBaseline = "top";
       ctx.fillText("+", cursorX, y - 1);
       ctx.restore();
@@ -384,9 +392,9 @@ function measureLayout(card) {
     contentPadBottom: 34,
     rowGap: 14,
     lineHeight: 38,
-    codeFont: "31px Consolas, 'Courier New', monospace",
+    codeFont: `31px ${CODE_FONT_FAMILY}`,
     titleFont: "700 31px Inter, 'Segoe UI', Arial",
-    monoTitleFont: "700 30px Inter, 'Segoe UI', Arial"
+    monoTitleFont: `700 30px ${CODE_FONT_FAMILY}`
   };
   metrics.cardX = metrics.margin;
   metrics.cardY = metrics.margin;
@@ -683,3 +691,7 @@ if (new URLSearchParams(window.location.search).get("idea") === "saved") {
   history.replaceState(null, "", window.location.pathname);
 }
 renderCard(currentCard);
+codeFontReady.finally(() => {
+  downloadBtn.disabled = false;
+  renderCard(currentCard);
+});

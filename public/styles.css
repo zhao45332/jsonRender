@@ -63,7 +63,7 @@ textarea {
   border-radius: 6px;
   background: #090e0f;
   color: var(--accent);
-  font-family: Consolas, "SFMono-Regular", monospace;
+  font-family: Hack, Consolas, "SFMono-Regular", monospace;
   font-size: 20px;
   border: 1px solid var(--line);
 }
@@ -182,6 +182,11 @@ button {
   padding: 0 16px;
   cursor: pointer;
   color: #0f1314;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
 }
 
 .primary {
