@@ -16,8 +16,10 @@ const addCustomSymbolBtn = document.querySelector("#addCustomSymbolBtn");
 
 const API_CARDS_URL = "api/cards";
 const API_IDEAS_URL = "api/ideas";
-const ISSUE_NEW_URL = "https://github.com/zhao45332/jsonRender/issues/new";
 const IS_GITHUB_PAGES = location.hostname.endsWith("github.io");
+const SUPABASE_CONFIG = window.SUPABASE_CONFIG || {};
+const HAS_SUPABASE =
+  Boolean(SUPABASE_CONFIG.url && SUPABASE_CONFIG.anonKey && window.supabase?.createClient);
 const CODE_FONT_FAMILY = "Hack, Consolas, 'Courier New', monospace";
 const codeFontReady = document.fonts
   ? Promise.all([
@@ -590,51 +592,50 @@ function downloadPng() {
     .catch((error) => setMessage(`PNG 已下载，但保存失败：${error.message}`, true));
 }
 
-async function submitIdea(event) {
-  event.preventDefault();
-  const ideaText = new FormData(ideaForm).get("ideaText");
-  if (!String(ideaText || "").trim()) {
-    setIdeaMessage("请输入建议内容", true);
-    return;
+async function submitIdeaToSupabase(ideaText) {
+  const supabase = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+  const { error } = await supabase.from("ideas").insert({ idea_text: ideaText });
+  if (error) throw error;
+}
+
+async function submitIdeaToLocalApi(ideaText) {
+  const response = await fetch(API_IDEAS_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ ideaText })
+  });
+
+  if (response.status === 404) {
+    throw new Error("当前环境未配置建议提交服务。");
   }
 
-  if (IS_GITHUB_PAGES) {
-    const issueUrl = new URL(ISSUE_NEW_URL);
-    issueUrl.searchParams.set("title", "用户创意建议");
-    issueUrl.searchParams.set("body", String(ideaText).trim());
-    window.open(issueUrl.toString(), "_blank", "noopener,noreferrer");
-    setIdeaMessage("已打开 GitHub Issue 页面，请在那里提交建议。");
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result.message || "提交失败");
+  }
+}
+
+async function submitIdea(event) {
+  event.preventDefault();
+  const ideaText = String(new FormData(ideaForm).get("ideaText") || "").trim();
+  if (!ideaText) {
+    setIdeaMessage("请输入建议内容", true);
     return;
   }
 
   setIdeaMessage("正在提交...");
 
-  let response;
   try {
-    response = await fetch(API_IDEAS_URL, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ideaText })
-    });
-  } catch {
-    setIdeaMessage("静态部署模式暂不支持保存建议。", true);
-    return;
+    if (HAS_SUPABASE) {
+      await submitIdeaToSupabase(ideaText);
+    } else {
+      await submitIdeaToLocalApi(ideaText);
+    }
+    ideaForm.reset();
+    setIdeaMessage("建议已提交，谢谢。");
+  } catch (error) {
+    setIdeaMessage(error.message || "提交失败", true);
   }
-
-  if (response.status === 404) {
-    setIdeaMessage("静态部署模式暂不支持保存建议。", true);
-    return;
-  }
-
-  const result = await response.json().catch(() => ({}));
-
-  if (!response.ok) {
-    setIdeaMessage(result.message || "提交失败", true);
-    return;
-  }
-
-  ideaForm.reset();
-  setIdeaMessage("建议已保存，谢谢。");
 }
 
 form.addEventListener("submit", (event) => event.preventDefault());

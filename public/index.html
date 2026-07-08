@@ -72,7 +72,7 @@
       <form id="ideaForm" class="panel idea-panel" action="api/ideas" method="post" novalidate>
         <div>
           <h2>用户创意</h2>
-          <p>这里提交的内容只作为建议，不会出现在 JSON 卡片或 PNG 中。线上静态版会打开 GitHub Issue。</p>
+          <p>这里提交的内容只作为建议，不会出现在 JSON 卡片或 PNG 中。</p>
         </div>
         <textarea id="ideaText" name="ideaText" maxlength="5000" rows="4" placeholder="写下你希望增加的功能、样式或使用建议"></textarea>
         <button class="secondary" type="submit">提交建议</button>
@@ -81,6 +81,8 @@
     </section>
 
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="./supabase-config.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
